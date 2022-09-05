@@ -21,7 +21,12 @@ def find_gadget(gdb_api: pwnlib.gdb.Gdb, path: str, address: Optional[int] = Non
     param cache: Return cached gadget, default True
     return: Address of satisfiable gadget or None
     """
-    gdb_api.wait()
+    # wait is only necessary (and only implemented) for pwntools use case
+    try:
+        gdb_api.wait()
+    except:
+        pass
+
     log.info("Finding one gadgets")
     current_pc = get_current_pc(gdb_api)
     log.info("Current program counter: %s" % hex(current_pc))
