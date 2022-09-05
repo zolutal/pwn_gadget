@@ -65,6 +65,8 @@ p.interactive()
 # TODOs
 - The 'is writable' constraints are not to be trusted, the check for that isn't implemented yet
 - Make gdb use case not dependent on pwntools, for some reason gdb uses system python (rip venv gang) 
+- Cache the last satisfied gadget for remote exploits where getting a gdb instance isn't possible
 - Some of the parsing done of the one_gadget command's output is very hackish, should test this against the example libcs in the one_gadget repo to make sure I didn't miss handling some possible constraints 
 - Prevent using gdb command when there is no active process
 - Have gdb command use the libc loaded by the process by default
+- Might be out of scope, but for the pwntools use case it would be really cool to have an option which tries to auto-create a rop chain to satisfy simple constraints
