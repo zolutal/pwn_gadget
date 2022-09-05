@@ -31,7 +31,12 @@ Searches for a gadget where every boolean operation returned True, returning eit
 Regardless of if a satisfiable gadget is found or not, color coded information on the succeeding and failing constraints for each gadget will be printed.
 
 # Usage
+## As a gdb command
+```
+(gdb) pwn_gadget ./libc.so.6
+```
 
+## In a pwntools script
 ```python
 from pwn import *
 import pwn_gadget
