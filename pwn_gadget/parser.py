@@ -60,7 +60,8 @@ def parse_gdb_arg(arg: str) -> str:
         arg = arg.replace(found_type, "")
 
     # Extract number of derefs
-    derefs: str = "".join(["*" for c in arg if c == "["])
+    derefs_ct: int = arg.count("[")
+    derefs: str = '*'*derefs_ct + "(long" + '*'*derefs_ct + ')'
     arg = arg.replace("[", "").replace("]", "")
 
     reg: str = arg.split(" ")[0]
@@ -69,7 +70,7 @@ def parse_gdb_arg(arg: str) -> str:
     if "xmm" in reg:
         #TODO handle xmm better(?)
         xmm_type: str = "v2_int64"
-        gdb_arg = derefs + f"(${reg}.{xmm_type})" + extra_ops
+        gdb_arg = arg_type + derefs + f"(${reg}.{xmm_type})" + extra_ops
     else:
         gdb_arg = derefs + arg_type + f"(${reg}) " + extra_ops
     return gdb_arg
