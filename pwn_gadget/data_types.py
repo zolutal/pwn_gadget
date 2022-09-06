@@ -1,6 +1,7 @@
-from typing import Optional, List, NamedTuple, Dict, Callable, Tuple
+from typing import Optional, List, Dict, Callable
 from dataclasses import dataclass
 
+from pwn_gadget.util import check_memory_permissions
 import operator
 
 class Operator:
@@ -12,15 +13,15 @@ class Operator:
         ">" : operator.gt,
         ">=": operator.ge,
         "<" : operator.lt,
-        "<=": operator.le
+        "<=": operator.le,
+        "wr": check_memory_permissions
     }
     def __init__(self, opstr: str):
         self.opstr: str = opstr
 
-    def eval(self, arg1, arg2) -> bool:
-        #TODO: implement
+    def eval(self, arg1: int, arg2: int, gdb_api) -> bool:
         if self.opstr in "wr":
-            return False 
+            return self._mapping.get(self.opstr)(arg1, arg2, gdb_api)
         return self._mapping.get(self.opstr)(arg1, arg2)
 
 @dataclass

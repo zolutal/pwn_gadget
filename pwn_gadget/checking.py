@@ -49,7 +49,7 @@ def check_constraint_group(gdb_api: pwnlib.gdb.Gdb, constraint_group: Constraint
             parsed_res = res.split(",")[1][:-2]
         value = int(parsed_res, 16)
         
-        if constraint.operation.eval(value, constraint.arg2):
+        if constraint.operation.eval(value, constraint.arg2, gdb_api):
             succeeded.append(constraint)
             break # if one constraint succeeded in the constraint group, no need to check the rest
         else:

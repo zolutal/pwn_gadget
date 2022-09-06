@@ -1,4 +1,5 @@
 from typing import Optional, List, NamedTuple, Dict, Callable, Tuple
+from pwn_gadget.util import MemoryPerm
 from pwn_gadget.data_types import *
 
 import re
@@ -28,22 +29,24 @@ def parse_constraint(constraint: List[str]) -> List[Constraint]:
         operation: Operator
         if c.endswith("is writable"):
             arg1 = c.split(" ")[1]
+            arg2 = MemoryPerm.WRITE 
             operation = Operator("wr")
         elif c.startswith("writable:"):
             arg1 = c.split(" ")[1]
+            arg2 = MemoryPerm.WRITE
             operation = Operator('wr')
         elif '&' in c: # Handle $rsp & 0xf == NULL
             comps = c.split(" ")
             operation = Operator(comps[3])
             arg1 = " ".join(comps[0:3])
-            arg2 = comps[4]
+            arg2 = comps[4].replace('NULL', '0')
         else:
             comps = c.split(" ")
             operation = Operator(comps[1])
             arg1 = comps[0]
-            arg2 = comps[2]
+            arg2 = comps[2].replace('NULL', '0')
         arg1 = parse_gdb_arg(arg1)
-        arg2 = int(arg2.replace('NULL', '0')) if arg2 is not None else arg2
+        arg2 = int(arg2)
         parsed.append(Constraint(arg1, arg2, operation, c))
     return parsed
 
