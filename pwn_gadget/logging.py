@@ -8,3 +8,7 @@ class Logging():
     @staticmethod
     def warn(string: str):
         print('[' + colored('!', 'yellow') + '] ' + string)
+
+    @staticmethod
+    def error(string: str):
+        print('[' + colored('ERROR', 'red') + '] ' + string)
