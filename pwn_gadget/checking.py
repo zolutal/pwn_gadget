@@ -2,9 +2,7 @@ from typing import Optional, List, NamedTuple, Dict, Callable, Tuple
 from pwn_gadget.data_types import *
 from termcolor import cprint
 
-from pwn import * 
-
-def check_constraints(gdb_api: pwnlib.gdb.Gdb, gadgets: List[Gadget]) -> Optional[int]:
+def check_constraints(gdb_api, gadgets: List[Gadget]) -> Optional[int]:
     gadget_fails: List[Tuple[Gadget, List[ConstraintGroup]]] = []
     for gadget in gadgets:
         cg_fails: List[ConstraintGroup] = []
@@ -34,7 +32,7 @@ def check_constraints(gdb_api: pwnlib.gdb.Gdb, gadgets: List[Gadget]) -> Optiona
 
     return None
 
-def check_constraint_group(gdb_api: pwnlib.gdb.Gdb, constraint_group: ConstraintGroup) -> Tuple[List[Constraint], List[Constraint]]:
+def check_constraint_group(gdb_api, constraint_group: ConstraintGroup) -> Tuple[List[Constraint], List[Constraint]]:
     failed: List[Constraint] = []
     succeeded: List[Constraint] = []
     for constraint in constraint_group.constraints:

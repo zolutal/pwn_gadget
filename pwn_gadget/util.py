@@ -1,8 +1,8 @@
 from typing import List, Dict
 from functools import reduce
-from pwn import *
 
 import subprocess
+import sys
 
 class MemoryPerm():
     READ = 1
@@ -20,7 +20,7 @@ class MemoryPerm():
         self.value = reduce(lambda x, y: x | y, [self.str_perm_map.get(perm, 0) for perm in perm_str])
 
         
-def check_memory_permissions(address: int, perm: int, gdb_api: pwnlib.gdb.Gdb) -> bool:
+def check_memory_permissions(address: int, perm: int, gdb_api) -> bool:
     """
     param gdb_api: The current gdb api to execute commands through 
     param address: The address of memory to check the permissions for 
@@ -46,5 +46,5 @@ def check_memory_permissions(address: int, perm: int, gdb_api: pwnlib.gdb.Gdb) -
 def get_constraints_list(path: str) -> List[str]:
     return subprocess.check_output(['one_gadget', '-l1', path]).decode().split('\n\n')
 
-def get_current_pc(gdb_api: pwnlib.gdb.Gdb) -> int: 
+def get_current_pc(gdb_api) -> int: 
     return int(gdb_api.execute("p/x $pc", to_string=True).split(" ")[-1], 16)
