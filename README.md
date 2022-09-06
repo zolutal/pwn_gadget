@@ -67,4 +67,3 @@ p.interactive()
 - Some of the parsing done of the one_gadget command's output is very hackish, should test this against the example libcs in the one_gadget repo to make sure I didn't miss handling some possible constraints 
 - Prevent using gdb command when there is no active process
 - Have gdb command use the libc loaded by the process by default
-- Might be out of scope, but for the pwntools use case it would be really cool to have an option which tries to auto-create a rop chain to satisfy simple constraints
