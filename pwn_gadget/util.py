@@ -1,8 +1,8 @@
+from pwn_gadget.logging import Logging as log
 from typing import List, Dict
 from functools import reduce
 
 import subprocess
-import sys
 
 class MemoryPerm():
     READ = 1

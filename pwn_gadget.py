@@ -12,7 +12,6 @@ import pwn_gadget
 class PwnGadgetCommand(gdb.Command):
     def __init__(self):
         super(PwnGadgetCommand, self).__init__("pwn_gadget", gdb.COMMAND_USER)
-        print("initialized command")
 
     def invoke(self, arg, from_tty):
         args = arg.split(" ")
