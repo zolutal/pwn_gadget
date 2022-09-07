@@ -1,6 +1,6 @@
 from typing import Optional, List, NamedTuple, Dict, Callable, Tuple
 from pwn_gadget.data_types import *
-from termcolor import cprint
+from pwn_gadget.logging import Color, cprint
 
 def check_constraints(gdb_api, gadgets: List[Gadget]) -> Optional[int]:
     gadget_fails: List[Tuple[Gadget, List[ConstraintGroup]]] = []
@@ -23,9 +23,9 @@ def check_constraints(gdb_api, gadgets: List[Gadget]) -> Optional[int]:
         print(f"Constraints for offset {hex(gadget.address)}:")
         for constraint_group in gadget.constraint_groups:
             if constraint_group in gadget_fails[idx][1]:
-                cprint(constraint_group.raw, 'red')
+                cprint(constraint_group.raw, Color.RED)
             else:
-                cprint(constraint_group.raw, 'green')
+                cprint(constraint_group.raw, Color.GREEN)
 
     if len(least_failed_constraints) == 0:
         return best_gadget.address
