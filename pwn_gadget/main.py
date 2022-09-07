@@ -55,10 +55,8 @@ def parse_args(args: List[str]) -> Namespace:
 def command(gdb, args_str: str):
     args_str = args_str.strip()
     args = args_str.split() if args_str else []
-    print(args)
     try:
         ns: Namespace = parse_args(args)
-        print(ns)
         find_gadget(gdb, ns.path, ns.level)
     except SystemExit: # ArgParse --help...
         pass
