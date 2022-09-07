@@ -61,8 +61,3 @@ p.interactive()
 ![Successful discovery of satisfied one gadget](static/success.png)
 ## Failure
 ![Failed discovery of satisfied one gadget](static/failure.png)
-
-# TODOs
-- Cache the last satisfied gadget for remote exploits where getting a gdb instance isn't possible
-- Some of the parsing done of the one_gadget command's output is very hackish, should test this against the example libcs in the one_gadget repo to make sure I didn't miss handling some possible constraints 
-- Prevent using gdb command when there is no active process
