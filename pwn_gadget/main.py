@@ -4,9 +4,10 @@ from pwn_gadget.checking import check_constraints
 from pwn_gadget.logging import Logging as log
 from pwn_gadget.data_types import Gadget
 
+from argparse import ArgumentParser, Namespace
 from typing import Optional, List
 
-def find_gadget(gdb_api, path: Optional[str] = None) -> Optional[int]:
+def find_gadget(gdb_api, path: Optional[str] = None, level: int = 0) -> Optional[int]:
     """
     param gdb: The gdb api returned by gdb.attach(process, api=True)
     param path: The path to the libc to run one_gadget against
@@ -29,7 +30,7 @@ def find_gadget(gdb_api, path: Optional[str] = None) -> Optional[int]:
         log.info("Finding one gadgets for libc at %s" % path)
         current_pc = get_current_pc(gdb_api)
         log.info("Current program counter: %s" % hex(current_pc))
-        constraints_list: List[str] = get_constraints_list(path)
+        constraints_list: List[str] = get_constraints_list(path, level)
         log.info("Found %d one gadgets" % len(constraints_list))
         constraint_groups: List[Gadget] = parse_constraints_list(constraints_list)
         log.info("Performing gdb operations to evaluate constraints")
@@ -38,14 +39,28 @@ def find_gadget(gdb_api, path: Optional[str] = None) -> Optional[int]:
             log.info("Found satisfiable one gadget at address 0x%x" % valid_constraint)
         else:
             log.info("Failed to find a satisfiable one gadget")
+            if level == 0: log.info("Consider increasing the output level by specifying --level 1 to evaluate more gadgets")
         return valid_constraint
     except Exception as e:
         log.error(str(e))
 
+def parse_args(args: List[str]) -> Namespace:
+    parser: ArgumentParser =  ArgumentParser("pwn_gadget")
+    parser.add_argument('path', nargs='?', type=str, help="The path to the libc file to run one_gadget on. If unspecified, the libc loaded by the current debug target will be used.")
+    parser.add_argument('-l', '--level', type=int, default=0, help="sets the level parameter of one_gadget")
+
+    return parser.parse_args(args)
+
+
 def command(gdb, args_str: str):
-    #TODO argparse
     args_str = args_str.strip()
-    if args_str:
-        find_gadget(gdb, args_str.split(' ')[0])
-    else:
-        find_gadget(gdb)
+    args = args_str.split() if args_str else []
+    print(args)
+    try:
+        ns: Namespace = parse_args(args)
+        print(ns)
+        find_gadget(gdb, ns.path, ns.level)
+    except SystemExit: # ArgParse --help...
+        pass
+    except RuntimeWarning: # ArgParse on --help...
+        pass

@@ -1,7 +1,7 @@
 from pwn_gadget.logging import Logging as log
 from typing import List, Dict, Optional
 from functools import reduce
-from os.path import exists
+from os.path import exists, expanduser
 
 import subprocess
 
@@ -44,9 +44,9 @@ def check_memory_permissions(address: int, perm: int, gdb_api) -> bool:
             if mapping_perm & perm != 0: return True
     return False
 
-def get_constraints_list(path: str) -> List[str]:
-    if exists(path):
-        return subprocess.check_output(['one_gadget', '-l1', path]).decode().split('\n\n')
+def get_constraints_list(path: str, level: int) -> List[str]:
+    if exists(expanduser(path)):
+        return subprocess.check_output(['one_gadget', f'-l{level}', path]).decode().split('\n\n')
     raise Exception(f"Path '{path}' is invalid")
 
 def get_current_pc(gdb_api) -> int: 
