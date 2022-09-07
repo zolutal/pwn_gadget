@@ -1,4 +1,4 @@
-from pwn_gadget.util import get_current_pc, get_constraints_list, get_libc_path
+from pwn_gadget.util import get_current_pc, get_constraints_list, get_libc_path, is_alive
 from pwn_gadget.parser import parse_constraints_list
 from pwn_gadget.checking import check_constraints
 from pwn_gadget.logging import Logging as log
@@ -14,6 +14,9 @@ def find_gadget(gdb_api, path: Optional[str] = None) -> Optional[int]:
     """
     # TODO maybe this try catch should be made into a decorator
     try:
+        if not is_alive(gdb_api):
+            raise Exception("No active debugging session")
+            
         # wait() is only necessary (and only implemented) for pwntools use case
         try:
             gdb_api.wait()

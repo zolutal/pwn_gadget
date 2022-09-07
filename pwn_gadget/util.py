@@ -47,7 +47,7 @@ def check_memory_permissions(address: int, perm: int, gdb_api) -> bool:
 def get_constraints_list(path: str) -> List[str]:
     if exists(path):
         return subprocess.check_output(['one_gadget', '-l1', path]).decode().split('\n\n')
-    raise Exception (f"Path '{path}' is invalid")
+    raise Exception(f"Path '{path}' is invalid")
 
 def get_current_pc(gdb_api) -> int: 
     return int(gdb_api.execute("p/x $pc", to_string=True).split(" ")[-1], 16)
@@ -59,3 +59,10 @@ def get_libc_path(gdb_api) -> int:
         exit()
     output_split: List[str] = output_raw.split("\n") 
     return output_split[-1].strip().split(' ')[-1]
+
+def is_alive(gdb_api) -> bool:
+    """Check if GDB is running."""
+    try:
+        return gdb_api.selected_inferior().pid > 0
+    except Exception:
+        return False
