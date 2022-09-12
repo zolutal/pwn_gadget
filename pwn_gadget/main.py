@@ -17,7 +17,7 @@ def find_gadget(gdb_api, path: Optional[str] = None, level: int = 0) -> Optional
     try:
         if not is_alive(gdb_api):
             raise Exception("No active debugging session")
-            
+
         # wait() is only necessary (and only implemented) for pwntools use case
         try:
             gdb_api.wait()

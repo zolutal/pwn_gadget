@@ -1,6 +1,7 @@
-from typing import Optional, List, NamedTuple, Dict, Callable, Tuple
+from typing import Optional, List, Union
 from pwn_gadget.util import MemoryPerm
 from pwn_gadget.data_types import *
+from pwn_gadget.logging import Logging as log
 
 import re
 
@@ -9,13 +10,13 @@ def parse_constraints_list(constraints_list: List[str]) -> List[Gadget]:
 
     raw_constraints: str
     for raw_constraints in constraints_list:
-        lines = raw_constraints.split("\n")[:-1]
+        lines = raw_constraints.rstrip().split("\n")
 
         address = int(lines[0].split(" ")[0], 16)
 
         constraint_groups: List[ConstraintGroup] = []
         for constraint in lines[2:]:
-            split = [l.strip() for l in constraint.split("||")] 
+            split = [l.strip() for l in constraint.split("||")]
             constraints: List[Constraint] = parse_constraint(split)
             constraint_groups.append(ConstraintGroup(constraints, constraint))
         gadgets.append(Gadget(address, constraint_groups))
@@ -25,11 +26,11 @@ def parse_constraint(constraint: List[str]) -> List[Constraint]:
     parsed: List[Constraint] = []
     for c in constraint:
         arg1: str
-        arg2: Optional[str] = None
+        arg2: Optional[Union[str, int]] = None
         operation: Operator
         if c.endswith("is writable"):
             arg1 = c.split(" ")[1]
-            arg2 = MemoryPerm.WRITE 
+            arg2 = MemoryPerm.WRITE
             operation = Operator("wr")
         elif c.startswith("writable:"):
             arg1 = c.split(" ")[1]
@@ -58,8 +59,12 @@ def parse_gdb_arg(arg: str) -> str:
     arg_type: str = "(unsigned long)"
     m = re.search("\([a-zA-Z]\d*\)", arg) # \([a-zA-Z]\d{2}\)
     if m is not None:
-        found_type = m.group(0)
-        arg_type = type_map.get(found_type)
+        found_type = type_map.get(m.group(0))
+        if found_type:
+            arg_type = found_type
+        else:
+            log.error("Unhandled type '%s' encountered in one_gadget constraint, treating as unsigned long" % found_type)
+            found_type = "(unsigned long)"
         arg = arg.replace(found_type, "")
 
     # Extract number of derefs

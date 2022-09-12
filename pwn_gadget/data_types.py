@@ -36,12 +36,16 @@ class ConstraintGroup:
     constraints: List[Constraint]
     raw: str
 
-@dataclass 
+@dataclass
 class Gadget:
     address: int
     constraint_groups: List[ConstraintGroup]
 
 type_map: Dict[str, str] = {
+    "(s8)" : "(unsigned char)",
+    "(u8)" : "(signed char)",
+    "(s16)": "(unsigned short)",
+    "(u16)": "(signed short)",
     "(s32)": "(signed int)",
     "(u32)": "(unsigned int)",
     "(s64)": "(signed long)",
