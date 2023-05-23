@@ -20,11 +20,11 @@ class MemoryPerm():
         self.value: int = 0
         self.value = reduce(lambda x, y: x | y, [self.str_perm_map.get(perm, 0) for perm in perm_str])
 
-        
+
 def check_memory_permissions(address: int, perm: int, gdb_api) -> bool:
     """
-    param gdb_api: The current gdb api to execute commands through 
-    param address: The address of memory to check the permissions for 
+    param gdb_api: The current gdb api to execute commands through
+    param address: The address of memory to check the permissions for
     param perm: An integer representing the permission to check for
     return: True if perm in permissions for address, else False
     """
@@ -49,15 +49,15 @@ def get_constraints_list(path: str, level: int) -> List[str]:
         return subprocess.check_output(['one_gadget', f'-l{level}', path]).decode().split('\n\n')
     raise Exception(f"Path '{path}' is invalid")
 
-def get_current_pc(gdb_api) -> int: 
+def get_current_pc(gdb_api) -> int:
     return int(gdb_api.execute("p/x $pc", to_string=True).split(" ")[-1], 16)
 
-def get_libc_path(gdb_api) -> int: 
+def get_libc_path(gdb_api) -> str:
     output_raw: str = gdb_api.execute("info sharedlibrary libc", to_string=True).strip()
     if "No shared libraries matched." in output_raw:
         log.error("No shared libraries found in memory containing string 'libc', please specify the path and run again")
         exit()
-    output_split: List[str] = output_raw.split("\n") 
+    output_split: List[str] = output_raw.split("\n")
     return output_split[-1].strip().split(' ')[-1]
 
 def is_alive(gdb_api) -> bool:
