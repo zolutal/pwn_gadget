@@ -1,9 +1,14 @@
+from pwn_gadget.util import check_memory_permissions
 from typing import Optional, List, Dict, Callable
 from dataclasses import dataclass
-from pwn_gadget.logging import Logging as log
+from enum import Enum
 
-from pwn_gadget.util import check_memory_permissions
 import operator
+
+class Result(Enum):
+    Unsat = 1,
+    Unknown = 2,
+    Sat = 4,
 
 class Operator:
     """
@@ -15,18 +20,22 @@ class Operator:
         ">=": operator.ge,
         "<" : operator.lt,
         "<=": operator.le,
-        "wr": check_memory_permissions
+        "wr": check_memory_permissions,
+        "argv": lambda: Result.Unknown,
+        "envp": lambda: Result.Unknown,
     }
     def __init__(self, opstr: str):
         self.opstr: str = opstr
 
-    def eval(self, arg1: int, arg2: int, gdb_api) -> bool:
-        opfunc: Optional[Callable[[int, int], bool]] = self._mapping.get(self.opstr)
+    def eval(self, arg1: int, arg2: int, gdb_api) -> Result:
+        opfunc: Optional[Callable[[int, int], Result]] = self._mapping.get(self.opstr)
         if opfunc is None:
             raise Exception(f"No function for operator {self.opstr}")
         if self.opstr in "wr":
-            return opfunc(arg1, arg2, gdb_api)
-        return opfunc(arg1, arg2)
+            result = opfunc(arg1, arg2, gdb_api)
+        else:
+            result = opfunc(arg1, arg2)
+        return Result.Sat if result else Result.Unsat
 
 @dataclass
 class Constraint:

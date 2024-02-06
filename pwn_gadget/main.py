@@ -28,12 +28,16 @@ def find_gadget(gdb_api, path: Optional[str] = None, level: int = 0) -> Optional
             path = get_libc_path(gdb_api)
 
         log.info("Finding one gadgets for libc at %s" % path)
+
         current_pc = get_current_pc(gdb_api)
         log.info("Current program counter: %s" % hex(current_pc))
+
         constraints_list: List[str] = get_constraints_list(path, level)
         log.info("Found %d one gadgets" % len(constraints_list))
+
         constraint_groups: List[Gadget] = parse_constraints_list(constraints_list)
         log.info("Performing gdb operations to evaluate constraints")
+
         valid_constraint: Optional[int] = check_constraints(gdb_api, constraint_groups)
         if valid_constraint is not None:
             log.info("Found satisfiable one gadget at address 0x%x" % valid_constraint)
@@ -46,8 +50,11 @@ def find_gadget(gdb_api, path: Optional[str] = None, level: int = 0) -> Optional
 
 def parse_args(args: List[str]) -> Namespace:
     parser: ArgumentParser =  ArgumentParser("pwn_gadget")
-    parser.add_argument('path', nargs='?', type=str, help="The path to the libc file to run one_gadget on. If unspecified, the libc loaded by the current debug target will be used.")
-    parser.add_argument('-l', '--level', type=int, default=0, help="sets the level parameter of one_gadget")
+    parser.add_argument('path', nargs='?', type=str,
+                        help="The path to the libc file to run one_gadget on. \
+                        If unspecified, the libc loaded by the current debug target will be used.")
+    parser.add_argument('-l', '--level', type=int, default=0,
+                        help="sets the level parameter of one_gadget")
 
     return parser.parse_args(args)
 

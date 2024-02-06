@@ -20,7 +20,6 @@ class MemoryPerm():
         self.value: int = 0
         self.value = reduce(lambda x, y: x | y, [self.str_perm_map.get(perm, 0) for perm in perm_str])
 
-
 def check_memory_permissions(address: int, perm: int, gdb_api) -> bool:
     """
     param gdb_api: The current gdb api to execute commands through
@@ -58,7 +57,12 @@ def get_libc_path(gdb_api) -> str:
         log.error("No shared libraries found in memory containing string 'libc', please specify the path and run again")
         exit()
     output_split: List[str] = output_raw.split("\n")
-    return output_split[-1].strip().split(' ')[-1]
+    if output_split[-1].startswith("(*): "):
+        output_split = output_split[:-1]
+    path = output_split[-1].strip().split(' ')[-1]
+    # remote targets will prefix paths with 'target:'
+    path =  path.split("target:")[-1]
+    return path
 
 def is_alive(gdb_api) -> bool:
     """Check if GDB is running."""

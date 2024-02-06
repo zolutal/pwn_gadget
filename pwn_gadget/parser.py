@@ -32,6 +32,16 @@ def parse_constraint(constraint: List[str]) -> List[Constraint]:
             arg1 = c.split(" ")[1]
             arg2 = MemoryPerm.WRITE
             operation = Operator("wr")
+        elif c.endswith("are writable"):
+            c = c.split('addresses ')[1]
+            c = c.split(' are writable')[0]
+            cons = c.split(', ')[0]
+            for con in cons:
+                arg1 = parse_gdb_arg(con)
+                arg2 = int(MemoryPerm.WRITE)
+                operation = Operator("wr")
+                parsed.append(Constraint(arg1, arg2, operation, c))
+            continue
         elif c.startswith("writable:"):
             arg1 = c.split(" ")[1]
             arg2 = MemoryPerm.WRITE
@@ -41,6 +51,14 @@ def parse_constraint(constraint: List[str]) -> List[Constraint]:
             operation = Operator(comps[3])
             arg1 = " ".join(comps[0:3])
             arg2 = comps[4].replace('NULL', '0')
+        elif c.endswith('argv'): # 'is a valid argp'
+            arg1 = c.split("}")[0] + "}"
+            arg2 = 0
+            operation = Operator("argv")
+        elif c.endswith('envp'): # 'is a valid envp'
+            arg1 = c.split("}")[0] + "}"
+            arg2 = 0
+            operation = Operator("envp")
         else:
             comps = c.split(" ")
             operation = Operator(comps[1])
